@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Password Analyzer by y4sh_0day</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #00ff41;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid #00ff41;
+            padding: 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #00ff41;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .section {
+            background: #111;
+            border: 1px solid #00ff41;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            color: #00ff41;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            background: #000;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin-bottom: 10px;
+            outline: none;
+        }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {
+            color: #444;
+        }
+
+        button {
+            background: #00ff41;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background: #00cc33;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border: 1px solid #333;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .score-bar {
+            width: 100%;
+            height: 10px;
+            background: #333;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s;
+        }
+
+        .weak { background: #ff0000; }
+        .medium { background: #ff8800; }
+        .good { background: #ffff00; }
+        .strong { background: #00ff41; }
+
+        .suggestion {
+            color: #ff8800;
+            font-size: 12px;
+            margin: 3px 0;
+        }
+
+        .generated-password {
+            background: #000;
+            border: 1px solid #00ff41;
+            padding: 10px;
+            word-break: break-all;
+            font-size: 16px;
+            color: #00ff41;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        .crack-time {
+            color: #00ff41;
+            font-size: 13px;
+            margin: 5px 0;
+        }
+
+        .footer {
+            text-align: center;
+            color: #444;
+            font-size: 11px;
+            margin-top: 20px;
+            padding: 10px;
+            border-top: 1px solid #222;
+        }
+
+        .footer a {
+            color: #00ff41;
+            text-decoration: none;
+        }
+
+        .privacy {
+            color: #444;
+            font-size: 11px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .copy-msg {
+            color: #00ff41;
+            font-size: 12px;
+            text-align: center;
+            display: none;
+        }
+
+        .toggle-pass {
+            background: transparent;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            padding: 5px 10px;
+            width: auto;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="header">
+            <h1>🔐 PASSWORD ANALYZER</h1>
+            <p>by y4sh_0day | Free & Secure</p>
+            <p style="color:#444; font-size:11px; margin-top:5px;">
+                ⚡ We NEVER store or save your password
+            </p>
+        </div>
+
+        <!-- CHECK PASSWORD SECTION -->
+        <div class="section">
+            <h2>📊 CHECK YOUR PASSWORD</h2>
+            <input type="password" id="passwordInput" placeholder="Enter your password...">
+            <button class="toggle-pass" onclick="togglePassword()">👁 Show/Hide</button>
+            <button onclick="checkPassword()">🔍 ANALYZE PASSWORD</button>
+
+            <div class="result" id="checkResult">
+                <div id="scoreText"></div>
+                <div class="score-bar">
+                    <div class="score-fill" id="scoreFill"></div>
+                </div>
+                <div id="strengthText"></div>
+                <div id="crackTimeText" class="crack-time"></div>
+                <div id="suggestions"></div>
+            </div>
+        </div>
+
+        <!-- GENERATE PASSWORD SECTION -->
+        <div class="section">
+            <h2>🔑 GENERATE STRONG PASSWORD</h2>
+            <input type="text" id="customWord" 
+                placeholder="Optional: enter a word to include (e.g. your pet name)">
+            <button onclick="generatePassword()">⚡ GENERATE PASSWORD</button>
+
+            <div class="result" id="generateResult">
+                <p style="color:#888; font-size:12px; margin-bottom:5px;">
+                    Click password to copy:
+                </p>
+                <div class="generated-password" id="generatedPass" 
+                     onclick="copyPassword()"></div>
+                <div id="genCrackTime" class="crack-time"></div>
+                <div id="genStrength"></div>
+                <p class="copy-msg" id="copyMsg">✅ Copied to clipboard!</p>
+            </div>
+        </div>
+
+        <!-- PRIVACY NOTE -->
+        <p class="privacy">
+            🔒 100% Private — All processing happens in your browser.
+            Nothing is sent to any server. Your password stays with you.
+        </p>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p>Built by <a href="https://www.instagram.com/y4sh_0day" 
+               target="_blank">@y4sh_0day</a></p>
+            <p style="margin-top:5px;">
+                Follow for more security tips & tools 🔐
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        // ===== TOGGLE PASSWORD VISIBILITY =====
+        function togglePassword() {
+            const input = document.getElementById('passwordInput');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        // ===== CRACK TIME CALCULATOR =====
+        function calculateCrackTime(password) {
+            let charset = 0;
+            if (/[a-z]/.test(password)) charset += 26;
+            if (/[A-Z]/.test(password)) charset += 26;
+            if (/[0-9]/.test(password)) charset += 10;
+            if (/[!@#$%^&*]/.test(password)) charset += 32;
+            if (charset === 0) charset = 26;
+
+            const combinations = Math.pow(charset, password.length);
+            const seconds = combinations / 1000000000;
+
+            if (seconds < 60) return Math.floor(seconds) + " seconds";
+            if (seconds < 3600) return Math.floor(seconds/60) + " minutes";
+            if (seconds < 86400) return Math.floor(seconds/3600) + " hours";
+            if (seconds < 31536000) return Math.floor(seconds/86400) + " days";
+            if (seconds < 3153600000) return Math.floor(seconds/31536000) + " years";
+            return seconds.toExponential(2).replace('e+', ' x 10^') + " years";
+        }
+
+        // ===== CHECK PASSWORD =====
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+
+            if (password === '') {
+                alert('Please enter a password!');
+                return;
+            }
+
+            let score = 0;
+            let suggestions = [];
+
+            // Check length
+            if (password.length >= 8) score += 2;
+            else suggestions.push("Add more characters (minimum 8)");
+
+            if (password.length >= 12) score += 2;
+            else suggestions.push("Make it longer (12+ characters is better)");
+
+            // Check uppercase
+            if (/[A-Z]/.test(password)) score += 2;
+            else suggestions.push("Add uppercase letters (A-Z)");
+
+            // Check numbers
+            if (/[0-9]/.test(password)) score += 2;
+            else suggestions.push("Add numbers (0-9)");
+
+            // Check special chars
+            if (/[!@#$%^&*]/.test(password)) score += 2;
+            else suggestions.push("Add special characters (!@#$%^&*)");
+
+            // Show results
+            document.getElementById('checkResult').classList.add('show');
+            document.getElementById('scoreText').innerHTML = 
+                '<strong>Score: ' + score + '/10</strong>';
+
+            // Score bar
+            const fill = document.getElementById('scoreFill');
+            fill.style.width = (score * 10) + '%';
+
+            // Strength label
+            let strength = '';
+            fill.className = 'score-fill';
+            if (score <= 4) {
+                strength = '❌ WEAK';
+                fill.classList.add('weak');
+            } else if (score <= 6) {
+                strength = '⚠️ MEDIUM';
+                fill.classList.add('medium');
+            } else if (score <= 8) {
+                strength = '✅ GOOD';
+                fill.classList.add('good');
+            } else {
+                strength = '🔥 STRONG';
+                fill.classList.add('strong');
+            }
+
+            document.getElementById('strengthText').innerHTML = 
+                '<strong>Strength: ' + strength + '</strong>';
+
+            // Crack time
+            document.getElementById('crackTimeText').innerHTML = 
+                '⏱ Time to crack: ' + calculateCrackTime(password);
+
+            // Suggestions
+            let sugHTML = '';
+            if (suggestions.length > 0) {
+                sugHTML = '<br><strong>💡 Suggestions:</strong><br>';
+                suggestions.forEach(s => {
+                    sugHTML += '<div class="suggestion">→ ' + s + '</div>';
+                });
+            }
+            document.getElementById('suggestions').innerHTML = sugHTML;
+        }
+
+        // ===== GENERATE PASSWORD =====
+        function generatePassword() {
+            const custom = document.getElementById('customWord').value.replace(/\s/g, '');
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+            const lower = 'abcdefghijklmnopqrstuvwxyz';
+            const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const digits = '0123456789';
+            const special = '!@#$%^&*';
+
+            let password = [];
+
+            // Always include one of each type
+            password.push(upper[Math.floor(Math.random() * upper.length)]);
+            password.push(digits[Math.floor(Math.random() * digits.length)]);
+            password.push(special[Math.floor(Math.random() * special.length)]);
+            password.push(lower[Math.floor(Math.random() * lower.length)]);
+
+            // Add custom word if provided
+            if (custom !== '') {
+                for (let c of custom) {
+                    password.push(c);
+                }
+            }
+
+            // Fill to 16 characters
+            while (password.length < 16) {
+                password.push(chars[Math.floor(Math.random() * chars.length)]);
+            }
+
+            // Shuffle
+            for (let i = password.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [password[i], password[j]] = [password[j], password[i]];
+            }
+
+            const finalPassword = password.join('');
+
+            document.getElementById('generateResult').classList.add('show');
+            document.getElementById('generatedPass').textContent = finalPassword;
+            document.getElementById('genCrackTime').innerHTML = 
+                '⏱ Time to crack: ' + calculateCrackTime(finalPassword);
+            document.getElementById('genStrength').innerHTML = 
+                '<strong>Strength: 🔥 STRONG</strong>';
+            document.getElementById('copyMsg').style.display = 'none';
+        }
+
+        // ===== COPY PASSWORD =====
+        function copyPassword() {
+            const pass = document.getElementById('generatedPass').textContent;
+            navigator.clipboard.writeText(pass).then(() => {
+                document.getElementById('copyMsg').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('copyMsg').style.display = 'none';
+                }, 2000);
+            });
+        }
+
+        // ===== CHECK ON ENTER KEY =====
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkPassword();
+        });
+    </script>
+</body>
+</html>
