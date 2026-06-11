@@ -3,46 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔐 Password Analyzer by y4sh_0day</title>
+    <title>🔐 y4sh_0day Security Tools</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
             background-color: #0a0a0a;
             color: #00ff41;
             font-family: 'Courier New', monospace;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 600px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            border: 1px solid #00ff41;
             padding: 20px;
+            border: 1px solid #00ff41;
+            margin-bottom: 20px;
         }
 
-        .header h1 {
-            font-size: 24px;
+        .header h1 { font-size: 22px; color: #00ff41; }
+        .header p { color: #888; font-size: 12px; margin-top: 5px; }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: #000;
+            border: 1px solid #00ff41;
             color: #00ff41;
-            margin-bottom: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            flex: 1;
+            text-align: center;
         }
 
-        .header p {
-            color: #888;
-            font-size: 12px;
+        .tab.active {
+            background: #00ff41;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .section {
@@ -71,11 +84,6 @@
             outline: none;
         }
 
-        input[type="text"]::placeholder,
-        input[type="password"]::placeholder {
-            color: #444;
-        }
-
         button {
             background: #00ff41;
             color: #000;
@@ -89,8 +97,15 @@
             margin-bottom: 10px;
         }
 
-        button:hover {
-            background: #00cc33;
+        button:hover { background: #00cc33; }
+
+        .toggle-btn {
+            background: transparent;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            width: auto;
+            padding: 5px 10px;
+            font-size: 12px;
         }
 
         .result {
@@ -100,9 +115,7 @@
             display: none;
         }
 
-        .result.show {
-            display: block;
-        }
+        .result.show { display: block; }
 
         .score-bar {
             width: 100%;
@@ -123,11 +136,7 @@
         .good { background: #ffff00; }
         .strong { background: #00ff41; }
 
-        .suggestion {
-            color: #ff8800;
-            font-size: 12px;
-            margin: 3px 0;
-        }
+        .suggestion { color: #ff8800; font-size: 12px; margin: 3px 0; }
 
         .generated-password {
             background: #000;
@@ -140,11 +149,70 @@
             cursor: pointer;
         }
 
-        .crack-time {
-            color: #00ff41;
+        .crack-time { color: #00ff41; font-size: 13px; margin: 5px 0; }
+        .copy-msg { color: #00ff41; font-size: 12px; text-align: center; display: none; }
+
+        .info-box {
+            background: #000;
+            border: 1px solid #333;
+            padding: 15px;
+            margin: 10px 0;
             font-size: 13px;
-            margin: 5px 0;
+            line-height: 1.8;
         }
+
+        .info-box a {
+            color: #00ff41;
+            text-decoration: none;
+        }
+
+        .result-box {
+            background: #000;
+            border: 1px solid #00ff41;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 13px;
+            line-height: 2;
+            display: none;
+        }
+
+        .result-box.show { display: block; }
+
+        .port-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .port-table th {
+            background: #00ff41;
+            color: #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .port-table td {
+            padding: 8px;
+            border-bottom: 1px solid #222;
+        }
+
+        .port-table tr:hover { background: #111; }
+
+        .github-btn {
+            background: #333;
+            color: #00ff41;
+            border: 1px solid #00ff41;
+            padding: 15px;
+            text-align: center;
+            display: block;
+            text-decoration: none;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .github-btn:hover { background: #444; }
 
         .footer {
             text-align: center;
@@ -155,53 +223,54 @@
             border-top: 1px solid #222;
         }
 
-        .footer a {
-            color: #00ff41;
-            text-decoration: none;
-        }
+        .footer a { color: #00ff41; text-decoration: none; }
 
         .privacy {
             color: #444;
             font-size: 11px;
             text-align: center;
-            margin-bottom: 10px;
+            margin: 10px 0;
         }
 
-        .copy-msg {
-            color: #00ff41;
-            font-size: 12px;
-            text-align: center;
-            display: none;
-        }
-
-        .toggle-pass {
-            background: transparent;
+        .tag {
+            display: inline-block;
+            background: #001a00;
             border: 1px solid #00ff41;
             color: #00ff41;
-            padding: 5px 10px;
-            width: auto;
-            margin-bottom: 10px;
-            font-size: 12px;
+            padding: 3px 8px;
+            font-size: 11px;
+            margin: 3px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
 
-        <!-- HEADER -->
-        <div class="header">
-            <h1>🔐 PASSWORD ANALYZER</h1>
-            <p>by y4sh_0day | Free & Secure</p>
-            <p style="color:#444; font-size:11px; margin-top:5px;">
-                ⚡ We NEVER store or save your password
-            </p>
-        </div>
+    <!-- HEADER -->
+    <div class="header">
+        <h1>🔐 y4sh_0day Security Tools</h1>
+        <p>Free ethical hacking & security tools | Built by a CS student</p>
+        <p style="margin-top:8px;">
+            <span class="tag">Ethical Hacker in progress</span>
+            <span class="tag">Bug Hunter 🐛</span>
+            <span class="tag">CS Student</span>
+        </p>
+    </div>
 
-        <!-- CHECK PASSWORD SECTION -->
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('password')">🔐 Password</button>
+        <button class="tab" onclick="showTab('iplookup')">🌍 IP Lookup</button>
+        <button class="tab" onclick="showTab('dns')">🌐 DNS Lookup</button>
+        <button class="tab" onclick="showTab('ports')">📡 Port Info</button>
+    </div>
+
+    <!-- TAB 1: PASSWORD ANALYZER -->
+    <div id="tab-password" class="tab-content active">
+
         <div class="section">
             <h2>📊 CHECK YOUR PASSWORD</h2>
             <input type="password" id="passwordInput" placeholder="Enter your password...">
-            <button class="toggle-pass" onclick="togglePassword()">👁 Show/Hide</button>
+            <button class="toggle-btn" onclick="togglePassword()">👁 Show/Hide</button>
             <button onclick="checkPassword()">🔍 ANALYZE PASSWORD</button>
 
             <div class="result" id="checkResult">
@@ -215,11 +284,10 @@
             </div>
         </div>
 
-        <!-- GENERATE PASSWORD SECTION -->
         <div class="section">
             <h2>🔑 GENERATE STRONG PASSWORD</h2>
             <input type="text" id="customWord" 
-                placeholder="Optional: enter a word to include (e.g. your pet name)">
+                placeholder="Optional: enter a word to include (e.g. pet name)">
             <button onclick="generatePassword()">⚡ GENERATE PASSWORD</button>
 
             <div class="result" id="generateResult">
@@ -230,35 +298,146 @@
                      onclick="copyPassword()"></div>
                 <div id="genCrackTime" class="crack-time"></div>
                 <div id="genStrength"></div>
-                <p class="copy-msg" id="copyMsg">✅ Copied to clipboard!</p>
+                <p class="copy-msg" id="copyMsg">✅ Copied!</p>
             </div>
-        </div>
-
-        <!-- PRIVACY NOTE -->
-        <p class="privacy">
-            🔒 100% Private — All processing happens in your browser.
-            Nothing is sent to any server. Your password stays with you.
-        </p>
-
-        <!-- FOOTER -->
-        <div class="footer">
-            <p>Built by <a href="https://www.instagram.com/y4sh_0day" 
-               target="_blank">@y4sh_0day</a></p>
-            <p style="margin-top:5px;">
-                Follow for more security tips & tools 🔐
-            </p>
         </div>
 
     </div>
 
+    <!-- TAB 2: IP LOOKUP -->
+    <div id="tab-iplookup" class="tab-content">
+
+        <div class="section">
+            <h2>🌍 IP ADDRESS LOOKUP</h2>
+            <p style="color:#888; font-size:12px; margin-bottom:10px;">
+                Find location and info about any IP address
+            </p>
+            <input type="text" id="ipInput" placeholder="Enter IP address (e.g. 8.8.8.8)">
+            <button onclick="lookupIP()">🔍 LOOKUP IP</button>
+            <button onclick="getMyIP()" style="background:#001a00; color:#00ff41; border:1px solid #00ff41;">
+                📍 GET MY IP
+            </button>
+
+            <div class="result-box" id="ipResult"></div>
+        </div>
+
+        <div class="section">
+            <h2>💡 COMMON IP ADDRESSES</h2>
+            <div class="info-box">
+                <p>🔵 8.8.8.8 → Google DNS (Mountain View, CA)</p>
+                <p>🔵 1.1.1.1 → Cloudflare DNS (Fast & Private)</p>
+                <p>🔵 127.0.0.1 → Your own computer (Localhost)</p>
+                <p>🔵 192.168.x.x → Your home network (Private)</p>
+                <p>🔵 172.20.10.x → iPhone Hotspot (Private)</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TAB 3: DNS LOOKUP -->
+    <div id="tab-dns" class="tab-content">
+
+        <div class="section">
+            <h2>🌐 DNS LOOKUP</h2>
+            <p style="color:#888; font-size:12px; margin-bottom:10px;">
+                Convert domain name → IP address (like nslookup!)
+            </p>
+            <input type="text" id="dnsInput" placeholder="Enter domain (e.g. google.com)">
+            <button onclick="dnsLookup()">🔍 LOOKUP DOMAIN</button>
+
+            <div class="result-box" id="dnsResult"></div>
+        </div>
+
+        <div class="section">
+            <h2>💡 WHAT IS DNS?</h2>
+            <div class="info-box">
+                <p>DNS = Domain Name System</p>
+                <p>Like a phone book for the internet!</p>
+                <br>
+                <p>google.com → 142.250.80.46</p>
+                <p>ramapo.edu → 23.185.0.2</p>
+                <br>
+                <p>Without DNS → you'd need to remember IP addresses for every website!</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TAB 4: PORT INFO -->
+    <div id="tab-ports" class="tab-content">
+
+        <div class="section">
+            <h2>📡 COMMON PORTS REFERENCE</h2>
+            <p style="color:#888; font-size:12px; margin-bottom:10px;">
+                Ethical hackers scan these ports during reconnaissance
+            </p>
+
+            <table class="port-table">
+                <tr>
+                    <th>Port</th>
+                    <th>Service</th>
+                    <th>Risk if open</th>
+                </tr>
+                <tr><td>21</td><td>FTP</td><td style="color:#ff8800;">Medium - old protocol</td></tr>
+                <tr><td>22</td><td>SSH</td><td style="color:#ffff00;">Low - if configured right</td></tr>
+                <tr><td>23</td><td>Telnet</td><td style="color:#ff0000;">HIGH - no encryption!</td></tr>
+                <tr><td>25</td><td>SMTP Email</td><td style="color:#ff8800;">Medium</td></tr>
+                <tr><td>80</td><td>HTTP</td><td style="color:#ffff00;">Low - normal website</td></tr>
+                <tr><td>443</td><td>HTTPS</td><td style="color:#00ff41;">Safe - encrypted</td></tr>
+                <tr><td>3306</td><td>MySQL</td><td style="color:#ff0000;">HIGH - database!</td></tr>
+                <tr><td>8080</td><td>Web Server</td><td style="color:#ff8800;">Medium</td></tr>
+                <tr><td>53</td><td>DNS</td><td style="color:#ffff00;">Low - normal</td></tr>
+                <tr><td>445</td><td>SMB</td><td style="color:#ff0000;">HIGH - ransomware target!</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>🐍 PYTHON PORT SCANNER</h2>
+            <p style="color:#888; font-size:13px; margin-bottom:10px;">
+                Want to actually scan ports? Download my Python port scanner!
+            </p>
+            <div class="info-box">
+                <p>✅ Scans any website</p>
+                <p>✅ Shows open ports</p>
+                <p>✅ Identifies services</p>
+                <p>✅ Built with Python socket library</p>
+                <p>✅ For educational purposes only</p>
+            </div>
+            <a href="https://github.com/y4sh-0day/password-tool/blob/main/port_scanner.py" 
+               target="_blank" class="github-btn">
+                📥 Download Port Scanner on GitHub →
+            </a>
+        </div>
+
+    </div>
+
+    <!-- PRIVACY -->
+    <p class="privacy">
+        🔒 100% Private — All processing happens in your browser. Nothing stored.
+    </p>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <p>Built by <a href="https://www.instagram.com/y4sh_0day" target="_blank">@y4sh_0day</a></p>
+        <p style="margin-top:5px;">CS Student → Ethical Hacker | Bug Hunter 🐛</p>
+    </div>
+
     <script>
-        // ===== TOGGLE PASSWORD VISIBILITY =====
+        // ===== TAB SWITCHING =====
+        function showTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // ===== TOGGLE PASSWORD =====
         function togglePassword() {
             const input = document.getElementById('passwordInput');
             input.type = input.type === 'password' ? 'text' : 'password';
         }
 
-        // ===== CRACK TIME CALCULATOR =====
+        // ===== CRACK TIME =====
         function calculateCrackTime(password) {
             let charset = 0;
             if (/[a-z]/.test(password)) charset += 26;
@@ -275,80 +454,48 @@
             if (seconds < 86400) return Math.floor(seconds/3600) + " hours";
             if (seconds < 31536000) return Math.floor(seconds/86400) + " days";
             if (seconds < 3153600000) return Math.floor(seconds/31536000) + " years";
-            return seconds.toExponential(2).replace('e+', ' x 10^') + " years";
+            return seconds.toExponential(2) + " years";
         }
 
         // ===== CHECK PASSWORD =====
         function checkPassword() {
             const password = document.getElementById('passwordInput').value;
-
-            if (password === '') {
-                alert('Please enter a password!');
-                return;
-            }
+            if (password === '') { alert('Please enter a password!'); return; }
 
             let score = 0;
             let suggestions = [];
 
-            // Check length
             if (password.length >= 8) score += 2;
             else suggestions.push("Add more characters (minimum 8)");
-
             if (password.length >= 12) score += 2;
             else suggestions.push("Make it longer (12+ characters is better)");
-
-            // Check uppercase
             if (/[A-Z]/.test(password)) score += 2;
             else suggestions.push("Add uppercase letters (A-Z)");
-
-            // Check numbers
             if (/[0-9]/.test(password)) score += 2;
             else suggestions.push("Add numbers (0-9)");
-
-            // Check special chars
             if (/[!@#$%^&*]/.test(password)) score += 2;
             else suggestions.push("Add special characters (!@#$%^&*)");
 
-            // Show results
             document.getElementById('checkResult').classList.add('show');
-            document.getElementById('scoreText').innerHTML = 
-                '<strong>Score: ' + score + '/10</strong>';
+            document.getElementById('scoreText').innerHTML = '<strong>Score: ' + score + '/10</strong>';
 
-            // Score bar
             const fill = document.getElementById('scoreFill');
             fill.style.width = (score * 10) + '%';
-
-            // Strength label
-            let strength = '';
             fill.className = 'score-fill';
-            if (score <= 4) {
-                strength = '❌ WEAK';
-                fill.classList.add('weak');
-            } else if (score <= 6) {
-                strength = '⚠️ MEDIUM';
-                fill.classList.add('medium');
-            } else if (score <= 8) {
-                strength = '✅ GOOD';
-                fill.classList.add('good');
-            } else {
-                strength = '🔥 STRONG';
-                fill.classList.add('strong');
-            }
 
-            document.getElementById('strengthText').innerHTML = 
-                '<strong>Strength: ' + strength + '</strong>';
+            let strength = '';
+            if (score <= 4) { strength = '❌ WEAK'; fill.classList.add('weak'); }
+            else if (score <= 6) { strength = '⚠️ MEDIUM'; fill.classList.add('medium'); }
+            else if (score <= 8) { strength = '✅ GOOD'; fill.classList.add('good'); }
+            else { strength = '🔥 STRONG'; fill.classList.add('strong'); }
 
-            // Crack time
-            document.getElementById('crackTimeText').innerHTML = 
-                '⏱ Time to crack: ' + calculateCrackTime(password);
+            document.getElementById('strengthText').innerHTML = '<strong>Strength: ' + strength + '</strong>';
+            document.getElementById('crackTimeText').innerHTML = '⏱ Time to crack: ' + calculateCrackTime(password);
 
-            // Suggestions
             let sugHTML = '';
             if (suggestions.length > 0) {
                 sugHTML = '<br><strong>💡 Suggestions:</strong><br>';
-                suggestions.forEach(s => {
-                    sugHTML += '<div class="suggestion">→ ' + s + '</div>';
-                });
+                suggestions.forEach(s => { sugHTML += '<div class="suggestion">→ ' + s + '</div>'; });
             }
             document.getElementById('suggestions').innerHTML = sugHTML;
         }
@@ -363,39 +510,29 @@
             const special = '!@#$%^&*';
 
             let password = [];
-
-            // Always include one of each type
             password.push(upper[Math.floor(Math.random() * upper.length)]);
             password.push(digits[Math.floor(Math.random() * digits.length)]);
             password.push(special[Math.floor(Math.random() * special.length)]);
             password.push(lower[Math.floor(Math.random() * lower.length)]);
 
-            // Add custom word if provided
             if (custom !== '') {
-                for (let c of custom) {
-                    password.push(c);
-                }
+                for (let c of custom) { password.push(c); }
             }
 
-            // Fill to 16 characters
             while (password.length < 16) {
                 password.push(chars[Math.floor(Math.random() * chars.length)]);
             }
 
-            // Shuffle
             for (let i = password.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [password[i], password[j]] = [password[j], password[i]];
             }
 
             const finalPassword = password.join('');
-
             document.getElementById('generateResult').classList.add('show');
             document.getElementById('generatedPass').textContent = finalPassword;
-            document.getElementById('genCrackTime').innerHTML = 
-                '⏱ Time to crack: ' + calculateCrackTime(finalPassword);
-            document.getElementById('genStrength').innerHTML = 
-                '<strong>Strength: 🔥 STRONG</strong>';
+            document.getElementById('genCrackTime').innerHTML = '⏱ Time to crack: ' + calculateCrackTime(finalPassword);
+            document.getElementById('genStrength').innerHTML = '<strong>Strength: 🔥 STRONG</strong>';
             document.getElementById('copyMsg').style.display = 'none';
         }
 
@@ -404,16 +541,107 @@
             const pass = document.getElementById('generatedPass').textContent;
             navigator.clipboard.writeText(pass).then(() => {
                 document.getElementById('copyMsg').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('copyMsg').style.display = 'none';
-                }, 2000);
+                setTimeout(() => { document.getElementById('copyMsg').style.display = 'none'; }, 2000);
             });
         }
 
-        // ===== CHECK ON ENTER KEY =====
+        // ===== IP LOOKUP =====
+        async function lookupIP() {
+            const ip = document.getElementById('ipInput').value.trim();
+            if (ip === '') { alert('Please enter an IP address!'); return; }
+
+            const result = document.getElementById('ipResult');
+            result.classList.add('show');
+            result.innerHTML = '⏳ Looking up ' + ip + '...';
+
+            try {
+                const response = await fetch('https://ipinfo.io/' + ip + '/json');
+                const data = await response.json();
+
+                result.innerHTML = `
+                    <p>🌍 <strong>IP:</strong> ${data.ip || ip}</p>
+                    <p>🏙️ <strong>City:</strong> ${data.city || 'Unknown'}</p>
+                    <p>🗺️ <strong>Region:</strong> ${data.region || 'Unknown'}</p>
+                    <p>🏳️ <strong>Country:</strong> ${data.country || 'Unknown'}</p>
+                    <p>🏢 <strong>Provider:</strong> ${data.org || 'Unknown'}</p>
+                    <p>📮 <strong>Postal:</strong> ${data.postal || 'Unknown'}</p>
+                    <p>⏰ <strong>Timezone:</strong> ${data.timezone || 'Unknown'}</p>
+                `;
+            } catch (error) {
+                result.innerHTML = '❌ Error looking up IP. Try again!';
+            }
+        }
+
+        // ===== GET MY IP =====
+        async function getMyIP() {
+            const result = document.getElementById('ipResult');
+            result.classList.add('show');
+            result.innerHTML = '⏳ Getting your IP...';
+
+            try {
+                const response = await fetch('https://ipinfo.io/json');
+                const data = await response.json();
+
+                result.innerHTML = `
+                    <p>📍 <strong>Your IP:</strong> ${data.ip}</p>
+                    <p>🏙️ <strong>City:</strong> ${data.city || 'Unknown'}</p>
+                    <p>🗺️ <strong>Region:</strong> ${data.region || 'Unknown'}</p>
+                    <p>🏳️ <strong>Country:</strong> ${data.country || 'Unknown'}</p>
+                    <p>🏢 <strong>Provider:</strong> ${data.org || 'Unknown'}</p>
+                    <p>⏰ <strong>Timezone:</strong> ${data.timezone || 'Unknown'}</p>
+                    <br>
+                    <p style="color:#ff8800; font-size:11px;">
+                        ⚠️ This is what websites see when you visit them!
+                    </p>
+                `;
+
+                document.getElementById('ipInput').value = data.ip;
+            } catch (error) {
+                result.innerHTML = '❌ Error getting IP. Try again!';
+            }
+        }
+
+        // ===== DNS LOOKUP =====
+        async function dnsLookup() {
+            const domain = document.getElementById('dnsInput').value.trim();
+            if (domain === '') { alert('Please enter a domain!'); return; }
+
+            const result = document.getElementById('dnsResult');
+            result.classList.add('show');
+            result.innerHTML = '⏳ Looking up ' + domain + '...';
+
+            try {
+                const response = await fetch('https://dns.google/resolve?name=' + domain + '&type=A');
+                const data = await response.json();
+
+                if (data.Answer && data.Answer.length > 0) {
+                    let html = '<p><strong>Domain:</strong> ' + domain + '</p><br>';
+                    html += '<p><strong>IP Addresses found:</strong></p>';
+                    data.Answer.forEach(record => {
+                        if (record.type === 1) {
+                            html += '<p>→ ' + record.data + '</p>';
+                        }
+                    });
+                    result.innerHTML = html;
+                } else {
+                    result.innerHTML = '❌ No DNS records found for ' + domain;
+                }
+            } catch (error) {
+                result.innerHTML = '❌ Error looking up domain. Try again!';
+            }
+        }
+
+        // Enter key support
         document.getElementById('passwordInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') checkPassword();
         });
+        document.getElementById('ipInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') lookupIP();
+        });
+        document.getElementById('dnsInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') dnsLookup();
+        });
     </script>
+
 </body>
 </html>
